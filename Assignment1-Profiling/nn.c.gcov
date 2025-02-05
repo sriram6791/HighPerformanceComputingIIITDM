@@ -1,0 +1,440 @@
+        -:    0:Source:nn.c
+        -:    0:Graph:nn.gcno
+        -:    0:Data:nn.gcda
+        -:    0:Runs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <time.h>
+        -:    4:
+        -:    5:/* ------------------------ MATRIX MATH FUNCTIONS ------------------------ */
+    #####:    6:double dot_int(const int *vec1, const int *vec2, int n) {
+    #####:    7:    int dot_sum = 0;
+    #####:    8:    for (int i = 0; i < n; i++) {
+    #####:    9:        dot_sum += (vec1[i] * vec2[i]);
+        -:   10:    }
+    #####:   11:    return dot_sum;
+        -:   12:}
+        -:   13:
+     3253:   14:double dot_double(const double *vec1, const double *vec2, int n) {
+     3253:   15:    double dot_sum = 0;
+    10036:   16:    for (int i = 0; i < n; i++) {
+     6783:   17:        dot_sum += (vec1[i] * vec2[i]);
+        -:   18:    }
+     3253:   19:    return dot_sum;
+        -:   20:}
+        -:   21:
+        -:   22:/* Print a 1D int vector */
+    #####:   23:void print_vec1D_int(int *vec, int n) {
+    #####:   24:    for (int i = 0; i < n; i++) {
+    #####:   25:        printf("%d ", vec[i]);
+        -:   26:    }
+    #####:   27:    printf("\n");
+    #####:   28:}
+        -:   29:
+        -:   30:/* Print a 2D int matrix */
+    #####:   31:void print_vec2D_int(int **matrix, int rows, int cols) {
+    #####:   32:    for (int i = 0; i < rows; i++) {
+    #####:   33:        for (int j = 0; j < cols; j++) {
+    #####:   34:            printf("%d ", matrix[i][j]);
+        -:   35:        }
+    #####:   36:        printf("\n");
+        -:   37:    }
+    #####:   38:}
+        -:   39:
+        -:   40:/* Print a 2D double matrix */
+       31:   41:void print_vec2D_double(double **matrix, int rows, int cols) {
+      124:   42:    for (int i = 0; i < rows; i++) {
+      546:   43:        for (int j = 0; j < cols; j++) {
+      453:   44:            printf("%lf ", matrix[i][j]);
+        -:   45:        }
+       93:   46:        printf("\n");
+        -:   47:    }
+       31:   48:}
+        -:   49:
+        -:   50:/* Print weights (a 2D double matrix) */
+      300:   51:void print_weights(double **weights, int rows, int cols) {
+     1080:   52:    for (int i = 0; i < rows; i++) {
+     2760:   53:        for (int j = 0; j < cols; j++) {
+     1980:   54:            printf("%lf ", weights[i][j]);
+        -:   55:        }
+      780:   56:        printf("\n");
+        -:   57:    }
+      300:   58:}
+        -:   59:
+        -:   60:/* Return vertical column from a 2D int matrix */
+    #####:   61:int *return_vertical_col_int(int **mat, int rows, int col) {
+    #####:   62:    int *column = (int *)malloc(rows * sizeof(int));
+    #####:   63:    for (int i = 0; i < rows; i++) {
+    #####:   64:        column[i] = mat[i][col];
+        -:   65:    }
+    #####:   66:    return column;
+        -:   67:}
+        -:   68:
+        -:   69:/* Return vertical column from a 2D double matrix */
+     4486:   70:double *return_vertical_col_double(double **mat, int rows, int col) {
+     4486:   71:    double *column = (double *)malloc(rows * sizeof(double));
+    18982:   72:    for (int i = 0; i < rows; i++) {
+    14496:   73:        column[i] = mat[i][col];
+        -:   74:    }
+     4486:   75:    return column;
+        -:   76:}
+        -:   77:
+        -:   78:/* Cross multiplication for 2D int matrices */
+    #####:   79:int **Cross_MUl_int(int **mat1, int r1, int c1, int **mat2, int r2, int c2) {
+    #####:   80:    if (c1 != r2) {
+    #####:   81:        fprintf(stderr, "Error : Mat1 and Mat2 are not compatible for matrix multiplication\n");
+        -:   82:    }
+    #####:   83:    int **result = (int **)malloc(r1 * sizeof(int *));
+    #####:   84:    for (int i = 0; i < r1; i++) {
+    #####:   85:        result[i] = (int *)malloc(c2 * sizeof(int));
+    #####:   86:        for (int j = 0; j < c2; j++) {
+    #####:   87:            int *curr_col = return_vertical_col_int(mat2, r2, j);
+    #####:   88:            result[i][j] = dot_int(mat1[i], curr_col, c1);
+    #####:   89:            free(curr_col);
+        -:   90:        }
+        -:   91:    }
+    #####:   92:    return result;
+        -:   93:}
+        -:   94:
+        -:   95:/* Cross multiplication for 2D double matrices */
+      425:   96:double **Cross_MUl_double(double **mat1, int r1, int c1, double **mat2, int r2, int c2) {
+      425:   97:    if (c1 != r2) {
+      180:   98:        fprintf(stderr, "Error : Mat1 and Mat2 are not compatible for matrix multiplication\n");
+        -:   99:    }
+      425:  100:    double **result = (double **)malloc(r1 * sizeof(double *));
+     1518:  101:    for (int i = 0; i < r1; i++) {
+     1093:  102:        result[i] = (double *)malloc(c2 * sizeof(double));
+     4346:  103:        for (int j = 0; j < c2; j++) {
+     3253:  104:            double *curr_col = return_vertical_col_double(mat2, r2, j);
+     3253:  105:            result[i][j] = dot_double(mat1[i], curr_col, c1);
+     3253:  106:            free(curr_col);
+        -:  107:        }
+        -:  108:    }
+      425:  109:    return result;
+        -:  110:}
+        -:  111:
+        -:  112:/* Transpose a 2D int matrix */
+    #####:  113:int **Transpose_int(int **matrix, int rows, int cols) {
+    #####:  114:    int **transposed = (int **)malloc(cols * sizeof(int *));
+    #####:  115:    for (int i = 0; i < cols; i++) {
+    #####:  116:        transposed[i] = return_vertical_col_int(matrix, rows, i);
+        -:  117:    }
+    #####:  118:    return transposed;
+        -:  119:}
+        -:  120:
+        -:  121:/* Transpose a 2D double matrix */
+      331:  122:double **Transpose_double(double **matrix, int rows, int cols) {
+      331:  123:    double **transposed = (double **)malloc(cols * sizeof(double *));
+     1564:  124:    for (int i = 0; i < cols; i++) {
+     1233:  125:        transposed[i] = return_vertical_col_double(matrix, rows, i);
+        -:  126:    }
+      331:  127:    return transposed;
+        -:  128:}
+        -:  129:
+        -:  130:/* Element-wise subtraction for 2D double matrices: mat1 - mat2 */
+      180:  131:double **Subtract(double **mat1, double **mat2, int rows, int cols) {
+      180:  132:    double **result = (double **)malloc(rows * sizeof(double *));
+      660:  133:    for (int i = 0; i < rows; i++) {
+      480:  134:        result[i] = (double *)malloc(cols * sizeof(double));
+     1920:  135:        for (int j = 0; j < cols; j++) {
+     1440:  136:            result[i][j] = mat1[i][j] - mat2[i][j];
+        -:  137:        }
+        -:  138:    }
+      180:  139:    return result;
+        -:  140:}
+        -:  141:
+        -:  142:/* Scalar multiplication of a 2D double matrix */
+      150:  143:double **scalar_mul_with_matrix(double **matrix, int rows, int cols, double scalar) {
+      150:  144:    double **result = (double **)malloc(rows * sizeof(double *));
+      540:  145:    for (int i = 0; i < rows; i++) {
+      390:  146:        result[i] = (double *)malloc(cols * sizeof(double));
+     1380:  147:        for (int j = 0; j < cols; j++) {
+      990:  148:            result[i][j] = scalar * matrix[i][j];
+        -:  149:        }
+        -:  150:    }
+      150:  151:    return result;
+        -:  152:}
+        -:  153:
+        -:  154:/* Calculate error over a 2D double matrix */
+    #####:  155:double calculate_error(double **test, double **input, int rows, int cols) {
+    #####:  156:    double error = 0;
+    #####:  157:    for (int i = 0; i < rows; i++) {
+    #####:  158:        for (int j = 0; j < cols; j++) {
+    #####:  159:            double diff = test[i][j] - input[i][j];
+    #####:  160:            error += diff * diff;
+        -:  161:        }
+        -:  162:    }
+    #####:  163:    error = error / (rows * cols);
+    #####:  164:    return error;
+        -:  165:}
+        -:  166:
+        -:  167:/* error_cal: For each row in delta, compute average and return a column vector */
+       30:  168:double **error_cal(double **delta, int rows, int cols, int m) {
+       30:  169:    double **ans = (double **)malloc(rows * sizeof(double *));
+      120:  170:    for (int i = 0; i < rows; i++) {
+       90:  171:        ans[i] = (double *)malloc(sizeof(double));
+       90:  172:        double sum = 0;
+      540:  173:        for (int j = 0; j < cols; j++) {
+      450:  174:            sum += delta[i][j];
+        -:  175:        }
+       90:  176:        ans[i][0] = sum / m;
+        -:  177:    }
+       30:  178:    return ans;
+        -:  179:}
+        -:  180:
+        -:  181:/* ------------------------ UTILS ------------------------ */
+        -:  182:/* Return a random number in [0,1) */
+       33:  183:double get_random_number() {
+       33:  184:    return (double)rand() / ((double)RAND_MAX + 1.0);
+        -:  185:}
+        -:  186:
+        -:  187:/* Initialize weights: returns a 2D double matrix of size dim1 x dim2 with random numbers */
+        5:  188:double **initialize_weights(int dim1, int dim2) {
+        5:  189:    double **weights = (double **)malloc(dim1 * sizeof(double *));
+       18:  190:    for (int i = 0; i < dim1; i++) {
+       13:  191:        weights[i] = (double *)malloc(dim2 * sizeof(double));
+       46:  192:        for (int j = 0; j < dim2; j++) {
+       33:  193:            weights[i][j] = get_random_number();
+        -:  194:        }
+        -:  195:    }
+        5:  196:    return weights;
+        -:  197:}
+        -:  198:
+        -:  199:/* ------------------------ NEURAL NETWORK ------------------------ */
+        -:  200:typedef struct {
+        -:  201:    double **NetworkWeights[100]; /* To store network weights (max 100 layers) */
+        -:  202:    int nodes[100];                /* Number of nodes in each layer */
+        -:  203:    int num_layers;                /* Total number of layers */
+        -:  204:    double **layer_outputs[100];   /* Outputs from each layer */
+        -:  205:    double **d_w[100];             /* dW for each layer */
+        -:  206:    double **d_z[100];             /* dz for each layer */
+        -:  207:    double **inputs_for_each_layer[100];
+        -:  208:    double learning_rate;
+        -:  209:    /* To keep track of dimensions for each stored 2D matrix */
+        -:  210:    int NetworkWeights_dims[100][2];
+        -:  211:    int layer_outputs_dims[100][2];
+        -:  212:    int d_w_dims[100][2];
+        -:  213:    int d_z_dims[100][2];
+        -:  214:    int inputs_dims[100][2];
+        -:  215:} NeuralNetwork;
+        -:  216:
+        -:  217:/* Constructor for NeuralNetwork.
+        -:  218:   nodes_count_in_each_layer: array containing number of nodes in each layer.
+        -:  219:   num: length of that array.
+        -:  220:   For example, {4,3,3,1} means input size 4, first layer 3 nodes, second layer 3 nodes, and output 1 node.
+        -:  221:*/
+        1:  222:NeuralNetwork *create_NeuralNetwork(int *nodes_count_in_each_layer, int num) {
+        1:  223:    NeuralNetwork *nn = (NeuralNetwork *)malloc(sizeof(NeuralNetwork));
+        1:  224:    nn->num_layers = num;
+        1:  225:    nn->learning_rate = 0.001;
+        7:  226:    for (int i = 0; i < num; i++) {
+        6:  227:        nn->nodes[i] = nodes_count_in_each_layer[i];
+        -:  228:    }
+        6:  229:    for (int i = 1; i < num; i++) {
+        5:  230:        int r = nodes_count_in_each_layer[i];
+        5:  231:        int c = nodes_count_in_each_layer[i - 1];
+        5:  232:        nn->NetworkWeights[i - 1] = initialize_weights(r, c);
+        5:  233:        nn->NetworkWeights_dims[i - 1][0] = r;
+        5:  234:        nn->NetworkWeights_dims[i - 1][1] = c;
+        5:  235:        nn->layer_outputs[i - 1] = NULL;
+        5:  236:        nn->inputs_for_each_layer[i - 1] = NULL;
+        5:  237:        nn->d_w[i - 1] = NULL;
+        5:  238:        nn->d_z[i - 1] = NULL;
+        -:  239:    }
+        1:  240:    return nn;
+        -:  241:}
+        -:  242:
+        -:  243:/* Print network weights */
+       60:  244:void print_network_weights(NeuralNetwork *nn) {
+       60:  245:    int layers = nn->num_layers - 1;
+      360:  246:    for (int i = 0; i < layers; i++) {
+      300:  247:        printf("Layer-%d\n", i);
+      300:  248:        printf("input dim : %d, num nodes:%d\n", nn->nodes[i], nn->nodes[i + 1]);
+      300:  249:        printf("Weight dimensions : %d X %d\n", nn->nodes[i], nn->nodes[i + 1]);
+      300:  250:        printf("Weights :\n");
+      300:  251:        print_weights(nn->NetworkWeights[i], nn->NetworkWeights_dims[i][0], nn->NetworkWeights_dims[i][1]);
+      300:  252:        printf("\n");
+        -:  253:    }
+       60:  254:}
+        -:  255:
+        -:  256:/* ReLU activation: ReLU(x) returns 0 if x < 0 else x */
+    #####:  257:double **ReLU(double **input, int rows, int cols) {
+    #####:  258:    double **output = (double **)malloc(rows * sizeof(double *));
+    #####:  259:    for (int i = 0; i < rows; i++) {
+    #####:  260:        output[i] = (double *)malloc(cols * sizeof(double));
+    #####:  261:        for (int j = 0; j < cols; j++) {
+    #####:  262:            output[i][j] = (input[i][j] > 0 ? input[i][j] : 0);
+        -:  263:        }
+        -:  264:    }
+    #####:  265:    return output;
+        -:  266:}
+        -:  267:
+        -:  268:/* Feed forward function.
+        -:  269:   input is a 2D matrix (samples as rows). */
+       31:  270:double **feed_forward(NeuralNetwork *nn, double **input, int input_rows, int input_cols, int *out_rows, int *out_cols) {
+       31:  271:    int layers = nn->num_layers - 1;
+        -:  272:    int i, j;
+        -:  273:    /* Free previous layer_outputs and inputs_for_each_layer if needed (not done here for brevity) */
+        -:  274:    /* Transpose the input: from (input_rows x input_cols) to (input_cols x input_rows) */
+       31:  275:    double **input_to_pass = Transpose_double(input, input_rows, input_cols);
+       31:  276:    int current_rows = input_cols;
+       31:  277:    int current_cols = input_rows;
+      186:  278:    for (i = 0; i < layers; i++) {
+      155:  279:        nn->inputs_for_each_layer[i] = input_to_pass;
+      155:  280:        nn->inputs_dims[i][0] = current_rows;
+      155:  281:        nn->inputs_dims[i][1] = current_cols;
+      155:  282:        int w_r = nn->NetworkWeights_dims[i][0];
+      155:  283:        int w_c = nn->NetworkWeights_dims[i][1];
+      155:  284:        double **result = Cross_MUl_double(nn->NetworkWeights[i], w_r, w_c, input_to_pass, current_rows, current_cols);
+        -:  285:        /* Uncomment next line if ReLU is desired: result = ReLU(result, w_r, current_cols); */
+      155:  286:        nn->layer_outputs[i] = result;
+      155:  287:        nn->layer_outputs_dims[i][0] = w_r;
+      155:  288:        nn->layer_outputs_dims[i][1] = current_cols;
+        -:  289:        /* Free the previous input_to_pass if allocated (skip free for brevity) */
+      155:  290:        input_to_pass = result;
+      155:  291:        current_rows = w_r;
+        -:  292:        /* current_cols remains the same */
+        -:  293:    }
+       31:  294:    *out_rows = current_rows;
+       31:  295:    *out_cols = current_cols;
+       31:  296:    return input_to_pass;
+        -:  297:}
+        -:  298:
+        -:  299:/* Back propagation.
+        -:  300:   predicted and target are 2D matrices.
+        -:  301:   predicted dimensions should match target after transposition.
+        -:  302:*/
+       30:  303:void back_propogation(NeuralNetwork *nn, double **predicted, int pred_rows, int pred_cols, double **target, int target_rows, int target_cols) {
+       30:  304:    int layers = nn->num_layers - 1;
+       30:  305:    int number_of_samples = target_rows;
+       30:  306:    double **target_T = Transpose_double(target, target_rows, target_cols);
+       30:  307:    double **delta = Subtract(predicted, target_T, pred_rows, pred_cols);
+        -:  308:    /* Free target_T after use */
+        -:  309:    int i, j;
+      120:  310:    for (i = 0; i < target_cols; i++) {
+       90:  311:        free(target_T[i]);
+        -:  312:    }
+       30:  313:    free(target_T);
+       30:  314:    double **delta_ec = error_cal(delta, pred_rows, pred_cols, number_of_samples);
+      120:  315:    for (i = 0; i < pred_rows; i++) {
+       90:  316:        free(delta[i]);
+        -:  317:    }
+       30:  318:    free(delta);
+        -:  319:    /* Store d_z for output layer */
+       30:  320:    nn->d_z[0] = delta_ec;
+       30:  321:    nn->d_z_dims[0][0] = pred_rows;
+       30:  322:    nn->d_z_dims[0][1] = 1;
+       30:  323:    double **inputs_last_T = Transpose_double(nn->inputs_for_each_layer[layers - 1], nn->inputs_dims[layers - 1][0], nn->inputs_dims[layers - 1][1]);
+       30:  324:    double **grad = Cross_MUl_double(delta_ec, pred_rows, 1, inputs_last_T, nn->inputs_dims[layers - 1][1], nn->inputs_dims[layers - 1][0]);
+      180:  325:    for (i = 0; i < nn->inputs_dims[layers - 1][1]; i++) {
+      150:  326:        free(inputs_last_T[i]);
+        -:  327:    }
+       30:  328:    free(inputs_last_T);
+       30:  329:    nn->d_w[0] = grad;
+       30:  330:    nn->d_w_dims[0][0] = pred_rows;
+       30:  331:    nn->d_w_dims[0][1] = nn->inputs_dims[layers - 1][0];
+        -:  332:    int l;
+      150:  333:    for (l = layers - 1; l > 0; l--) {
+      120:  334:        double **W_next_T = Transpose_double(nn->NetworkWeights[l], nn->NetworkWeights_dims[l][0], nn->NetworkWeights_dims[l][1]);
+      120:  335:        double **delta_new = Cross_MUl_double(W_next_T, nn->NetworkWeights_dims[l][1], nn->NetworkWeights_dims[l][0], delta_ec, nn->d_z_dims[0][0], nn->d_z_dims[0][1]);
+      420:  336:        for (i = 0; i < nn->NetworkWeights_dims[l][1]; i++) {
+      300:  337:            free(W_next_T[i]);
+        -:  338:        }
+      120:  339:        free(W_next_T);
+      120:  340:        nn->d_z[layers - l] = delta_new;
+      120:  341:        nn->d_z_dims[layers - l][0] = nn->NetworkWeights_dims[l][1];
+      120:  342:        nn->d_z_dims[layers - l][1] = 1;
+      120:  343:        double **input_layer_T = Transpose_double(nn->inputs_for_each_layer[l - 1], nn->inputs_dims[l - 1][0], nn->inputs_dims[l - 1][1]);
+      120:  344:        double **grad_new = Cross_MUl_double(delta_new, nn->d_z_dims[layers - l][0], 1, input_layer_T, nn->inputs_dims[l - 1][1], nn->inputs_dims[l - 1][0]);
+      720:  345:        for (i = 0; i < nn->inputs_dims[l - 1][1]; i++) {
+      600:  346:            free(input_layer_T[i]);
+        -:  347:        }
+      120:  348:        free(input_layer_T);
+      120:  349:        nn->d_w[layers - l] = grad_new;
+      120:  350:        nn->d_w_dims[layers - l][0] = nn->d_z_dims[layers - l][0];
+      120:  351:        nn->d_w_dims[layers - l][1] = nn->inputs_dims[l - 1][0];
+        -:  352:    }
+        -:  353:    /* Reverse d_w and d_z arrays */
+       90:  354:    for (i = 0; i < layers / 2; i++) {
+       60:  355:        double **temp = nn->d_w[i];
+       60:  356:        int temp_dims0 = nn->d_w_dims[i][0], temp_dims1 = nn->d_w_dims[i][1];
+       60:  357:        nn->d_w[i] = nn->d_w[layers - 1 - i];
+       60:  358:        nn->d_w_dims[i][0] = nn->d_w_dims[layers - 1 - i][0];
+       60:  359:        nn->d_w_dims[i][1] = nn->d_w_dims[layers - 1 - i][1];
+       60:  360:        nn->d_w[layers - 1 - i] = temp;
+       60:  361:        nn->d_w_dims[layers - 1 - i][0] = temp_dims0;
+       60:  362:        nn->d_w_dims[layers - 1 - i][1] = temp_dims1;
+       60:  363:        temp = nn->d_z[i];
+       60:  364:        temp_dims0 = nn->d_z_dims[i][0];
+       60:  365:        temp_dims1 = nn->d_z_dims[i][1];
+       60:  366:        nn->d_z[i] = nn->d_z[layers - 1 - i];
+       60:  367:        nn->d_z_dims[i][0] = nn->d_z_dims[layers - 1 - i][0];
+       60:  368:        nn->d_z_dims[i][1] = nn->d_z_dims[layers - 1 - i][1];
+       60:  369:        nn->d_z[layers - 1 - i] = temp;
+       60:  370:        nn->d_z_dims[layers - 1 - i][0] = temp_dims0;
+       60:  371:        nn->d_z_dims[layers - 1 - i][1] = temp_dims1;
+        -:  372:    }
+        -:  373:    /* Update weights: W = W - learning_rate * d_w */
+      180:  374:    for (i = 0; i < layers; i++) {
+      150:  375:        double **scaled = scalar_mul_with_matrix(nn->d_w[i], nn->d_w_dims[i][0], nn->d_w_dims[i][1], nn->learning_rate);
+      150:  376:        double **newW = Subtract(nn->NetworkWeights[i], scaled, nn->NetworkWeights_dims[i][0], nn->NetworkWeights_dims[i][1]);
+      150:  377:        int r = nn->NetworkWeights_dims[i][0];
+      540:  378:        for (j = 0; j < r; j++) {
+      390:  379:            free(nn->NetworkWeights[i][j]);
+        -:  380:        }
+      150:  381:        free(nn->NetworkWeights[i]);
+      150:  382:        nn->NetworkWeights[i] = newW;
+      540:  383:        for (j = 0; j < nn->NetworkWeights_dims[i][0]; j++) {
+      390:  384:            free(scaled[j]);
+        -:  385:        }
+      150:  386:        free(scaled);
+        -:  387:    }
+       30:  388:}
+        -:  389:
+        -:  390:/* ------------------------ MAIN FUNCTION ------------------------ */
+        1:  391:int main() {
+        1:  392:    srand((unsigned int)time(NULL));
+        1:  393:    int layers[] = {3, 2, 3, 3, 2, 3};
+        1:  394:    int num_layers = sizeof(layers)/sizeof(layers[0]);
+        1:  395:    NeuralNetwork *nn = create_NeuralNetwork(layers, num_layers);
+        -:  396:    /* Prepare input: 5 rows x 3 cols */
+        1:  397:    int input_rows = 5, input_cols = 3, i, j;
+        1:  398:    double **input = (double **)malloc(input_rows * sizeof(double *));
+        1:  399:    double input_values[5][3] = {
+        -:  400:        {1.0, 2.0, 3.0},
+        -:  401:        {4.0, 5.0, 6.0},
+        -:  402:        {7.0, 8.0, 9.0},
+        -:  403:        {1.5, 2.6, 3.8},
+        -:  404:        {15.0, 25.0, 37.0}
+        -:  405:    };
+        6:  406:    for (i = 0; i < input_rows; i++) {
+        5:  407:        input[i] = (double *)malloc(input_cols * sizeof(double));
+       20:  408:        for (j = 0; j < input_cols; j++) {
+       15:  409:            input[i][j] = input_values[i][j];
+        -:  410:        }
+        -:  411:    }
+        1:  412:    int epochs = 30;
+       31:  413:    for (i = 1; i <= epochs; i++) {
+       30:  414:        printf("epoch : %d\n", i);
+       30:  415:        printf("Before weight update : \n");
+       30:  416:        print_network_weights(nn);
+        -:  417:        int out_r, out_c;
+       30:  418:        double **feed_forward_output = feed_forward(nn, input, input_rows, input_cols, &out_r, &out_c);
+       30:  419:        printf("completed %d feedforward\n", i);
+       30:  420:        print_vec2D_double(feed_forward_output, out_r, out_c);
+       30:  421:        back_propogation(nn, feed_forward_output, out_r, out_c, input, input_rows, input_cols);
+       30:  422:        printf("After weight update : \n");
+       30:  423:        print_network_weights(nn);
+       30:  424:        printf("\n");
+        -:  425:        /* For simplicity, memory cleanup of intermediate matrices is not shown */
+        -:  426:    }
+        1:  427:    double **input2 = (double **)malloc(1 * sizeof(double *));
+        1:  428:    input2[0] = (double *)malloc(3 * sizeof(double));
+        1:  429:    input2[0][0] = 4.0; input2[0][1] = 5.0; input2[0][2] = 6.0;
+        1:  430:    printf("\nTESTING1 : \n");
+        -:  431:    int test_r, test_c;
+        1:  432:    double **test = feed_forward(nn, input2, 1, 3, &test_r, &test_c);
+        1:  433:    print_vec2D_double(test, test_r, test_c);
+        -:  434:    /* Free allocated memory (cleanup code omitted for brevity) */
+        1:  435:    return 0;
+        -:  436:}
