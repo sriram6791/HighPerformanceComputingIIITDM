@@ -1,0 +1,5 @@
+Cannot access directory /usr/share/likwid/perfgroups/unknown
+--------------------------------------------------------------------------------
+CPU name:	12th Gen Intel(R) Core(TM) i7-12650H
+CPU type:	Unknown Intel Processor
+CPU clock:	2.69 GHz
